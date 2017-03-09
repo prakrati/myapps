@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+         >
+        <LinearLayout
+            android:layout_width="match_parent" android:background="@drawable/list_background"            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin" android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:weightSum="2"
+            android:padding="@dimen/activity_horizontal_margin">
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent" android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="material name" android:maxLines="1"
+                android:textAppearance="?android:textAppearanceLarge" />
+            <EditText
+                android:id="@+id/paidby" android:layout_weight="1" android:maxLines="1"
+                android:layout_width="match_parent" android:text="paidby"
+                android:layout_height="wrap_content"
+
+
+                android:textAppearance="?android:textAppearanceMedium" />
+            <ImageButton
+                android:layout_width="wrap_content" android:background="@drawable/edit"  android:id="@+id/editrecord"
+                android:layout_height="wrap_content"
+               />
+            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:weightSum="3"
+            android:padding="@dimen/activity_horizontal_margin">
+            <EditText
+                android:id="@+id/qty" android:maxLines="1"
+                android:layout_width="match_parent" android:text="qty" android:layout_weight="1"
+                android:layout_height="wrap_content"
+
+
+                android:textAppearance="?android:textAppearanceMedium" />
+            <EditText
+                android:id="@+id/price" android:maxLines="1"
+                android:layout_width="match_parent" android:text="price" android:layout_weight="1"
+                android:layout_height="wrap_content"
+
+
+                android:textAppearance="?android:textAppearanceMedium" />
+            <EditText
+                android:id="@+id/total" android:maxLines="1"
+                android:layout_width="match_parent" android:text="total"  android:layout_weight="1"
+                android:layout_height="wrap_content"
+
+
+                android:textAppearance="?android:textAppearanceMedium" />
+</LinearLayout>
+
+
+</LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

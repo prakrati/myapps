@@ -560,7 +560,7 @@ titleSiteName.setText("Project Name : "+siteName);
 
         Map<String, Object> childUpdates = new HashMap<>();
         //childUpdates.put("/site/" + key, postValues);
-        childUpdates.put("/user-labour/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-labour/" + userId + "/" +siteID + "/" +  key, postValues);
 
         mDatabase.updateChildren(childUpdates);
 
@@ -577,7 +577,7 @@ titleSiteName.setText("Project Name : "+siteName);
 
         Map<String, Object> childUpdates = new HashMap<>();
         //childUpdates.put("/site/" + key, postValues);
-        childUpdates.put("/user-otherExpense/" + userId + "/" + key, postValues);
+        childUpdates.put("/user-otherExpense/" + userId + "/" +siteID + "/" +  key, postValues);
 
         mDatabase.updateChildren(childUpdates);
 

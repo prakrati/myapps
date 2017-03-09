@@ -100,7 +100,7 @@ public class AddProjectDialog extends DialogFragment
         Map<String, Object> childUpdates = new HashMap<>();
 
         childUpdates.put("/user-site/" + userId + "/" + key, postValues);
-        childUpdates.put("/user-material/" + userId + "/" + key,postValues);
+        //childUpdates.put("/user-material/" + userId + "/" + key,postValues);
         mDatabase.updateChildren(childUpdates);
 
 
