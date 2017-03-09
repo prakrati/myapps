@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">ConstructionNotePlus</string>
+    <string name="sign_out">Sign out</string>
+    <string name="signed_out">Signed out</string>
+
+    <string name="disconnect">Disconnect</string>
+    <string name="google_title_text">Google Signin</string>
+    <string name="desc_firebase_lockup">Firebase logo and name</string>
+    <string name="loading">loading..</string>
+    <string name="google_status_fmt">Google User: %s</string>
+    <string name="firebase_status_fmt">Firebase User: %s</string>
+    <string name="title_activity_splash">Splash</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_site_detail">SiteDetail</string>
+    <string name="title_activity_home">Home</string>
+    <string name="no_record">No Record Found</string>
+</resources>
