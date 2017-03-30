@@ -7,14 +7,14 @@
     <LinearLayout
         android:layout_width="match_parent" android:id="@+id/sitelayout"
         android:layout_height="wrap_content"
-        android:background="@drawable/list_background"
+
         android:orientation="vertical" android:paddingLeft="5dp">
 
         <TextView
-            android:layout_width="match_parent" android:gravity="center"
+            android:layout_width="match_parent" android:gravity="center" android:id="@+id/titletoview"
             android:layout_height="wrap_content" android:textSize="@dimen/text_size" android:textColor="@color/textcolor"
 
-            android:text="Update Expense" />
+            android:text="Update Record" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         <EditText
             android:id="@+id/sitename" android:enabled="false"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content" android:textColor="@color/textcolor"
             android:ems="10" android:layout_weight="1"
             android:inputType="textPersonName"
             android:text="Name" />
@@ -32,33 +32,41 @@
         <EditText
             android:id="@+id/sitelocation" android:enabled="false"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content" android:textColor="@color/textcolor"
             android:ems="10" android:layout_weight="1"
             android:inputType="textPersonName"
             android:text="Name" />
             <ImageButton
                 android:layout_width="wrap_content" android:background="@drawable/edit"  android:id="@+id/siteedit"
-                android:layout_height="wrap_content"
+                android:layout_height="wrap_content" android:textColor="@color/textcolor"
                  />
-            </LinearLayout>
+            <ImageButton
+                android:layout_width="wrap_content" android:background="@drawable/save"  android:id="@+id/savesite"
+                android:layout_height="wrap_content" android:visibility="gone"
+                />
+
+
+    </LinearLayout>
         <LinearLayout
-            android:orientation="vertical" android:layout_width="match_parent" android:layout_marginTop="5dip"
-            android:layout_height="wrap_content"  android:layout_marginBottom="5dip" >
+            android:orientation="vertical" android:layout_width="match_parent" android:paddingBottom="5dip" android:layout_marginTop="5dip" android:paddingLeft="10dp" android:paddingRight="10dp"
+            android:layout_height="wrap_content" android:background="@drawable/list_background" android:layout_marginBottom="5dip" >
             <TextView
-                android:text="Select Expense" android:textSize="18sp" android:textColor="#000000"
+                android:text="Select Expense" android:textSize="18sp" android:textColor="@color/textcolor"
                 android:layout_width="match_parent" android:gravity="center"
                 android:layout_height="wrap_content"
                 />
-            <TextView
-                android:background="@color/gradientend" android:textSize="18sp" android:textColor="#000000"
-                android:layout_width="match_parent" android:gravity="center"
-                android:layout_height="2dp"
-                />
-            <Spinner
-                android:layout_width="match_parent" android:gravity="center"
-                android:layout_height="wrap_content" android:paddingTop="10dp"
-                android:id="@+id/spinner" />
+
+            <LinearLayout
+                android:orientation="horizontal" android:layout_width="match_parent" android:background="@drawable/dialog_bg"
+                android:layout_height="wrap_content" android:weightSum="1">
+                <Spinner
+                    android:spinnerMode="dropdown" android:layout_width="match_parent" android:gravity="center"
+                    android:layout_height="wrap_content"  android:popupBackground="@drawable/dialog_bg"
+                    android:id="@+id/spinner" android:layout_weight="1"/>
+
+            </LinearLayout>
         </LinearLayout>
+
     </LinearLayout>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recylerview_site_update"

@@ -13,6 +13,55 @@ public class SiteOtherExpense {
     public String uid;
     public String siteId;
     public String expId;
+
+    public String getExpName() {
+        return expName;
+    }
+
+    public void setExpName(String expName) {
+        this.expName = expName;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getExpId() {
+        return expId;
+    }
+
+    public void setExpId(String expId) {
+        this.expId = expId;
+    }
+
+    public String getExpDate() {
+        return expDate;
+    }
+
+    public void setExpDate(String expDate) {
+        this.expDate = expDate;
+    }
+
+    public String getExpAmt() {
+        return expAmt;
+    }
+
+    public void setExpAmt(String expAmt) {
+        this.expAmt = expAmt;
+    }
+
     public String expName;
     public String expDate;
     public String expAmt;

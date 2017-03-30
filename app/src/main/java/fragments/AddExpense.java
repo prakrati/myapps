@@ -1,6 +1,7 @@
 package fragments;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -9,8 +10,8 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,12 +27,14 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
+import com.journeyapps.barcodescanner.CaptureActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,7 +45,6 @@ import model.SiteInfo;
 import model.SiteLabour;
 import model.SiteMaterial;
 import model.SiteOtherExpense;
-import model.UserData;
 import umaahi.pravik.constructionnoteplus.R;
 
 /**
@@ -81,7 +83,7 @@ public class AddExpense extends Fragment implements View.OnClickListener{
             labourWages, setDate, setmydatelbr, OtherTxt, OtheAmtTxt, labourpaidby, setMatDate;
     TextView materialTotalCost, labourTotalCost, labourPaidBy, setLabDate, OtheExpDate,titleSiteName;
     Button materialSaveContiButton, materialAddMoreButton, labourSaveContBtn,
-            laboutAddMoreBtn, otherExpSaveBtn, addmoreOtheBtn;
+            laboutAddMoreBtn, otherExpSaveBtn, addmoreOtheBtn,scancode;
     LinearLayout materailcostLay, materialMainLayout, labourMainLayout,
             labourcostLay;
     ImageView datePicker, datePickerlbr;
@@ -93,7 +95,9 @@ public class AddExpense extends Fragment implements View.OnClickListener{
     DatePickerDialog datePickerDialog;
 
     private IntentIntegrator qrScan;
-
+    public static String expenseType;
+    public ImageView labourDate,materialDate,otherDate;
+    boolean saveClicked=true;
     public AddExpense() {
     }
 
@@ -166,7 +170,13 @@ public class AddExpense extends Fragment implements View.OnClickListener{
         laboutAddMoreBtn = (Button) view.findViewById(R.id.addmorelabour);
         otherExpSaveBtn = (Button) view.findViewById(R.id.saveotherexpbtn);
         addmoreOtheBtn = (Button) view.findViewById(R.id.addmoreotherexp);
-
+        scancode= (Button) view.findViewById(R.id.scancode);
+       labourDate= (ImageView) view.findViewById(R.id.lbrdate);
+        materialDate=(ImageView) view.findViewById(R.id.materialdt);
+        otherDate=(ImageView) view.findViewById(R.id.otherdate);
+        labourDate .setOnClickListener(this);
+                materialDate.setOnClickListener(this);
+        otherDate.setOnClickListener(this);
         materialSaveContiButton.setOnClickListener(this);
         materialAddMoreButton.setOnClickListener(this);
         labourSaveContBtn.setOnClickListener(this);
@@ -176,6 +186,8 @@ public class AddExpense extends Fragment implements View.OnClickListener{
         OtheExpDate.setOnClickListener(this);
         otherExpSaveBtn.setOnClickListener(this);
         addmoreOtheBtn.setOnClickListener(this);
+        scancode.setOnClickListener(this);
+        setHasOptionsMenu(true);
         //
         //sitename = (EditText) findViewById(R.id.entersitename);
         //  location = (EditText) findViewById(R.id.enterlocation);
@@ -196,16 +208,18 @@ titleSiteName.setText("Project Name : "+siteName);
                 iCurrentSelection = expenseSelection.getSelectedItemPosition();
                 System.out.println("position >>" + iCurrentSelection);
                 if (iCurrentSelection == 0) {
-
+                    expenseType="material";
                     materialExpense.setVisibility(View.VISIBLE);
                     labourExpense.setVisibility(View.GONE);
                     otherExpense.setVisibility(View.GONE);
                 } else if (iCurrentSelection == 1) {
+                    expenseType="labour";
                     labourExpense.setVisibility(View.VISIBLE);
                     materialExpense.setVisibility(View.GONE);
                     otherExpense.setVisibility(View.GONE);
 
                 } else if (iCurrentSelection == 2) {
+                    expenseType="other";
                     otherExpense.setVisibility(View.VISIBLE);
                     labourExpense.setVisibility(View.GONE);
                     materialExpense.setVisibility(View.GONE);
@@ -290,8 +304,8 @@ titleSiteName.setText("Project Name : "+siteName);
 						 */
                     } else {
 
-                        double cost = Double.parseDouble(labourWagesStr)
-                                * Double.parseDouble(labourDaysStr);
+                        float cost = Float.parseFloat(labourWagesStr)
+                                * Float.parseFloat(labourDaysStr);
                         String matcostStr = String.valueOf(cost).toString();
                         labourTotalCost.setText(matcostStr);
 
@@ -399,8 +413,12 @@ titleSiteName.setText("Project Name : "+siteName);
 
         return view;
     }
-
-    private void setEditingEnabled(boolean enabled) {
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        menu.findItem(R.id.action_settings).setVisible(false);
+        super.onPrepareOptionsMenu(menu);
+    }
+    /*private void setEditingEnabled(boolean enabled) {
         sitename.setEnabled(enabled);
         location.setEnabled(enabled);
         if (enabled) {
@@ -408,7 +426,7 @@ titleSiteName.setText("Project Name : "+siteName);
         } else {
             mSubmitButton.setVisibility(View.GONE);
         }
-    }
+    }*/
 
     public void getDate() {
         final Calendar c = Calendar.getInstance();
@@ -476,63 +494,7 @@ titleSiteName.setText("Project Name : "+siteName);
         datePickerDialog.show();
     }
 
-    public void addSite() {
 
-        siteNameStr = sitename.getText().toString();
-        locationStr = location.getText().toString();
-
-        if (TextUtils.isEmpty(siteNameStr)) {
-            sitename.setError(REQUIRED);
-            return;
-        }
-
-        // Body is required
-        if (TextUtils.isEmpty(locationStr)) {
-            location.setError(REQUIRED);
-            return;
-        }
-        setEditingEnabled(false);
-        Toast.makeText(getActivity(), "Posting...", Toast.LENGTH_SHORT).show();
-
-        mDatabase.child("user").child(userId).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        // Get user value
-                        UserData user = dataSnapshot.getValue(UserData.class);
-
-                        // [START_EXCLUDE]
-                        if (user == null) {
-                            // User is null, error out
-                            Log.e(TAG, "User " + userId + " is unexpectedly null");
-                            Toast.makeText(getActivity(),
-                                    "Error: could not fetch user.",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            // Write new post
-                            //  writeNewPost(userId, siteNameStr, locationStr, "000");
-                        }
-
-                        // Finish this Activity, back to the stream
-                        setEditingEnabled(true);
-
-                        // [END_EXCLUDE]
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Log.w(TAG, "getUser:onCancelled", databaseError.toException());
-                        // [START_EXCLUDE]
-                        setEditingEnabled(true);
-                        // [END_EXCLUDE]
-                    }
-                });
-
-
-        //Storing values to firebase
-
-
-    }
 
 
     private void writeNewPostMaterial(String userId, String siteid, String matNAme, String date, String price, String Qty, String paidby, String total) {
@@ -551,6 +513,12 @@ titleSiteName.setText("Project Name : "+siteName);
         materialPrice.setText("");
         materialTotalCost.setText("");
         matPaidBy.setText("");
+        setMatDate.setText("");
+        if(saveClicked==true)
+        {
+            getActivity().onBackPressed();
+        }
+
     }
 
     private void writeNewPostLabour(String userId, String siteid, String labName, String date, String days, String wages, String paidby, String total) {
@@ -568,6 +536,12 @@ titleSiteName.setText("Project Name : "+siteName);
         labourDays.setText("");
         labourWages.setText("");
         labourTotalCost.setText("");
+        setLabDate.setText("");
+        labourpaidby.setText("");
+        if(saveClicked==true)
+        {
+            getActivity().onBackPressed();
+        }
     }
 
     private void writeNewPostOther(String userId, String siteid, String expName, String date, String amot) {
@@ -583,47 +557,97 @@ titleSiteName.setText("Project Name : "+siteName);
 
         OtherTxt.setText("");
         OtheAmtTxt.setText("");
-        labourWages.setText("");
-        labourTotalCost.setText("");
+        OtheExpDate.setText("");
+        if(saveClicked==true)
+        {
+            getActivity().onBackPressed();
+        }
     }
 
     @Override
     public void onClick(View v) {
-        if (v == setMatDate) {
+
+        if (v == materialDate) {
             //datePickerMyGTC();
             getDate();
-        } else if (v == setLabDate) {
+        } else if (v == labourDate) {
             //datePickerMyGTC();
             getLabourDate();
         }
-        if (v == OtheExpDate) {
+        else if(v==scancode)
+        {
+            Intent intent = new Intent(getActivity(),CaptureActivity.class);
+            intent.setAction("com.google.zxing.client.android.SCAN");
+            intent.putExtra("SAVE_HISTORY", false);
+            startActivityForResult(intent, 0);
+        }
+        if (v == otherDate) {
             //datePickerMyGTC();
             getOtheXpDate();
         }
         if (v == otherExpSaveBtn) {
-
-            qrScan.initiateScan();
+            saveClicked=true;
+           // qrScan.initiateScan();
             //datePickerMyGTC(); OtherTxt, OtheAmtTxt otheExpName,otheExpAmt
-            /*otheExpName = OtherTxt.getText().toString().trim();
+            otheExpName = OtherTxt.getText().toString().trim();
             otheExpAmt = OtheAmtTxt.getText().toString().trim();
             dateStr=OtheExpDate.getText().toString().trim();
-            if (otheExpName.equalsIgnoreCase("") || otheExpAmt.equalsIgnoreCase("")) {
-                Toast t = Toast.makeText(getApplicationContext(),
-                        "Fields can not be empty", Toast.LENGTH_SHORT);
-                t.show();
-            } else {
 
-                writeNewPostOther(userId, siteid, otheExpName, otheExpAmt, dateStr);
+            if (TextUtils.isEmpty(otheExpName)) {
+                OtherTxt.setError(REQUIRED);
+                return;
+            }
 
-                finish();
+            // Body is required
+
+            if (TextUtils.isEmpty(dateStr)) {
+               // OtheExpDate.setError(REQUIRED);
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(otheExpAmt)) {
+                OtheAmtTxt.setError(REQUIRED);
+                return;
+            }
+
+
+
+                writeNewPostOther(userId, siteID, otheExpName,  dateStr,otheExpAmt);
+
+
                 // addReadMaterialInfo();
 
-            }*/
+
         } else if (v == addmoreOtheBtn) {
             //datePickerMyGTC();
-            getLabourDate();
-        } else if (v == materialSaveContiButton) {
+            saveClicked=false;
+            otheExpName = OtherTxt.getText().toString().trim();
+            otheExpAmt = OtheAmtTxt.getText().toString().trim();
+            dateStr=OtheExpDate.getText().toString().trim();
+            if (TextUtils.isEmpty(otheExpName)) {
+                OtherTxt.setError(REQUIRED);
+                return;
+            }
 
+            // Body is required
+
+            if (TextUtils.isEmpty(dateStr)) {
+               // OtheExpDate.setError(REQUIRED);
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(otheExpAmt)) {
+                OtheAmtTxt.setError(REQUIRED);
+                return;
+            }
+
+                writeNewPostOther(userId, siteID, otheExpName, dateStr,otheExpAmt );
+
+
+                // addReadMaterialInfo();
+
+        } else if (v == materialSaveContiButton) {
+            saveClicked=true;
             material = materialName.getText().toString().trim();
             matQty = materialQty.getText().toString().trim();
             matPrice = materialPrice.getText().toString();
@@ -632,76 +656,126 @@ titleSiteName.setText("Project Name : "+siteName);
             dateStr = setMatDate.getText().toString().trim();
             // System.out.println("material>>>>"+material +matQty +matPrice
             // +matTotalCost);
-            if (material.equalsIgnoreCase("") || matQty.equalsIgnoreCase("")
-                    || matPrice.equalsIgnoreCase("") || paidbyStr.equalsIgnoreCase("")) {
-                Toast t = Toast.makeText(getActivity(),
-                        "Fields can not be empty", Toast.LENGTH_SHORT);
-                t.show();
-            } else {
+            if (TextUtils.isEmpty(material)) {
+                materialName.setError(REQUIRED);
+                return;
+            }
 
+            if (TextUtils.isEmpty(matQty)) {
+                materialQty.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(matPrice)) {
+                materialPrice.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(matTotalCost)) {
+                materialTotalCost.setError(REQUIRED);
+                return;
+            }
+
+            if (TextUtils.isEmpty(paidbyStr)) {
+                matPaidBy.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(dateStr)) {
+               // setMatDate.setError(REQUIRED);
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
                 writeNewPostMaterial(userId, siteID, material, dateStr, matPrice, matQty, paidbyStr, matTotalCost);
 
                 //finish();
                 // addReadMaterialInfo();
 
-            }
+
 
         } else if (v == labourSaveContBtn) {
+            saveClicked=true;
             labourNameStr = labourName.getText().toString().trim();
             labourDaysStr = labourDays.getText().toString().trim();
             labourWagesStr = labourWages.getText().toString().trim();
             labTotalCost = labourTotalCost.getText().toString();
+           dateStr = setLabDate.getText().toString();
+            labourPaidByStr = labourpaidby.getText().toString();
+
+            if (TextUtils.isEmpty(labourNameStr)) {
+                labourName.setError(REQUIRED);
+                return;
+            }
 
 
-            if (labourNameStr.equalsIgnoreCase("")
-                    || labourDaysStr.equalsIgnoreCase("")
-                    || labourWagesStr.equalsIgnoreCase("")) {
-                Toast t = Toast.makeText(getActivity(),
-                        "Fields can not be empty", Toast.LENGTH_SHORT);
-                t.show();
-            } else {
+            if (TextUtils.isEmpty(labourDaysStr)) {
+                labourDays.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(labourWagesStr)) {
+                labourWages.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(labTotalCost)) {
+                labourTotalCost.setError(REQUIRED);
+                return;
+            }
 
-                labourNameStr = labourName.getText().toString().trim();
-                labourDaysStr = labourDays.getText().toString().trim();
-                labourWagesStr = labourWages.getText().toString().trim();
-                labTotalCost = labourTotalCost.getText().toString();
-                dateStr = setLabDate.getText().toString();
-                labourPaidByStr = labourpaidby.getText().toString();
-                if (labourNameStr.equalsIgnoreCase("")
-                        || labourDaysStr.equalsIgnoreCase("")
-                        || labourWagesStr.equalsIgnoreCase("")) {
-                    Toast t = Toast.makeText(getActivity(),
-                            "Fields can not be empty", Toast.LENGTH_SHORT);
-                    t.show();
-                } else {
+            if (TextUtils.isEmpty(dateStr)) {
+                //setLabDate.setError(REQUIRED);
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(labourPaidByStr)) {
+                labourpaidby.setError(REQUIRED);
+                return;
+            }
+
+
 
                     writeNewPostLabour(userId, siteID, labourNameStr, dateStr, labourDaysStr, labourWagesStr, labourPaidByStr, labTotalCost);
 
-                    //finish();
-                }
-
-            }
         } else if (v == laboutAddMoreBtn) {
+            saveClicked=false;
             labourNameStr = labourName.getText().toString().trim();
             labourDaysStr = labourDays.getText().toString().trim();
             labourWagesStr = labourWages.getText().toString().trim();
             labTotalCost = labourTotalCost.getText().toString();
             dateStr = setLabDate.getText().toString();
             labourPaidByStr = labourpaidby.getText().toString();
-            if (labourNameStr.equalsIgnoreCase("")
-                    || labourDaysStr.equalsIgnoreCase("")
-                    || labourWagesStr.equalsIgnoreCase("")) {
-                Toast t = Toast.makeText(getActivity(),
-                        "Fields can not be empty", Toast.LENGTH_SHORT);
-                t.show();
-            } else {
+            if (TextUtils.isEmpty(labourNameStr)) {
+                labourName.setError(REQUIRED);
+                return;
+            }
+
+
+            if (TextUtils.isEmpty(labourWagesStr)) {
+                labourDays.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(labourWagesStr)) {
+                labourWages.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(labTotalCost)) {
+                labourTotalCost.setError(REQUIRED);
+                return;
+            }
+
+            if (TextUtils.isEmpty(dateStr)) {
+               // setLabDate.setError(REQUIRED);
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (TextUtils.isEmpty(labourPaidByStr)) {
+                labourpaidby.setError(REQUIRED);
+                return;
+            }
+
 
                 writeNewPostLabour(userId, siteID, labourNameStr, dateStr, labourDaysStr, labourWagesStr, labourPaidByStr, labTotalCost);
 
 
-            }
-        } else if (v == materialAddMoreButton) {
 
+        } else if (v == materialAddMoreButton) {
+            saveClicked=false;
             material = materialName.getText().toString().trim();
             matQty = materialQty.getText().toString().trim();
             matPrice = materialPrice.getText().toString();
@@ -710,40 +784,56 @@ titleSiteName.setText("Project Name : "+siteName);
             dateStr = setMatDate.getText().toString().trim();
             // System.out.println("material>>>>"+material +matQty +matPrice
             // +matTotalCost);
-            if (material.equalsIgnoreCase("") || matQty.equalsIgnoreCase("")
-                    || matPrice.equalsIgnoreCase("") || paidbyStr.equalsIgnoreCase("")) {
-                Toast t = Toast.makeText(getActivity(),
-                        "Fields can not be empty", Toast.LENGTH_SHORT);
-                t.show();
-            } else {
+            if (TextUtils.isEmpty(material)) {
+                materialName.setError(REQUIRED);
+                return;
+            }
+
+            if (TextUtils.isEmpty(matQty)) {
+                materialQty.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(matPrice)) {
+                materialPrice.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(matTotalCost)) {
+                materialTotalCost.setError(REQUIRED);
+                return;
+            }
+
+            if (TextUtils.isEmpty(paidbyStr)) {
+                matPaidBy.setError(REQUIRED);
+                return;
+            }
+            if (TextUtils.isEmpty(dateStr)) {
+                Toast.makeText(getActivity(),"Date can not be empty", Toast.LENGTH_SHORT).show();
+                return;
+            }
                 System.out.println(dateStr + "********");
                 writeNewPostMaterial(userId, siteID, material, dateStr, matPrice, matQty, paidbyStr, matTotalCost);
 
 
-            }
+
         }
     }
-}
-    /* final void openProductSearch(String upc) {
-         Uri uri = Uri.parse("http://www.google." + LocaleManager.getProductSearchCountryTLD() +
-                 "/m/products?q=" + upc + "&source=zxing");
-         launchIntent(new Intent(Intent.ACTION_VIEW, uri));
-     }*/
-  /*  @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         if (result != null) {
             //if qrcode has nothing in it
             if (result.getContents() == null) {
-                Toast.makeText(this, "Result Not Found", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Result Not Found", Toast.LENGTH_LONG).show();
             } else {
                 //if qr contains data
                 try {
                     //converting the data to json
                     JSONObject obj = new JSONObject(result.getContents());
                     //setting values to textviews
-                    OtherTxt.setText(obj.getString("name"));
-                    OtheAmtTxt.setText(obj.getString("address"));
+                  /*  OtherTxt.setText(obj.getString("name"));
+                    OtheAmtTxt.setText(obj.getString("address"));*/
                     Toast.makeText(getActivity(), obj.getString("name")+obj.getString("address"), Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -757,4 +847,5 @@ titleSiteName.setText("Project Name : "+siteName);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
-    }*/
+    }
+}

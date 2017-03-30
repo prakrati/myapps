@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+    <TextView
+        android:text="My Profile" android:gravity="center_horizontal" android:textStyle="bold|italic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+       />
+
+    <ImageView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+android:src="@drawable/img_logo"
+        android:id="@+id/img"
+         />
+
+    <TextView
+        android:text="Name" android:textSize="@dimen/text_size"
+        android:layout_width="match_parent" android:textColor="@color/textcolor"
+        android:layout_height="wrap_content"
+        android:id="@+id/name" />
+
+    <TextView
+        android:text="Email"
+        android:layout_width="match_parent" android:textSize="@dimen/text_size"
+        android:layout_height="wrap_content"  android:textColor="@color/textcolor"
+        android:id="@+id/email" />
+
+    <TextView
+        android:text="Member Since" android:textSize="@dimen/text_size"  android:textColor="@color/textcolor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/member" />
+</LinearLayout>

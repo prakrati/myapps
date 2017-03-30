@@ -5,19 +5,19 @@
         <item
             android:id="@+id/addsite"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Add Site" />
-        <item
+            android:title="Home" />
+       <!-- <item
             android:id="@+id/viewexpense"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="View Expense and share" />
-        <item
-            android:id="@+id/updateexpense"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Update" />
+            android:title="View Expense and share" />-->
         <item
             android:id="@+id/myprofile"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_menu_slideshow"
             android:title="My Profile" />
+        <item
+            android:id="@+id/upgradetopremium"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Upgrade to premium" />
     </group>
 
     <item android:title="Communicate">
@@ -30,6 +30,10 @@
                 android:id="@+id/sendfeedback"
                 android:icon="@drawable/ic_menu_send"
                 android:title="Send Feedback" />
+            <item
+                android:id="@+id/rate"
+                android:icon="@mipmap/rate"
+                android:title="Rate" />
         </menu>
     </item>
 

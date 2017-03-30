@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:weightSum="2">
+<ImageView
+    android:layout_width="match_parent" android:layout_weight="1"
+    android:layout_height="wrap_content" android:src="@drawable/appicon"/>
+        <LinearLayout
+            android:orientation="vertical" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent" android:text="Construction Notes+ Premium Account" android:textSize="20sp" android:textColor="@color/textcolor" android:textStyle="bold"
+                android:layout_height="match_parent" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"  android:text="Upgrade to Premium Account and enjoy more features tailored for you."/>
+   <TextView
+       android:layout_width="match_parent" android:text="Select a monthly or yearly Subscription"
+       android:layout_height="match_parent" />
+    </LinearLayout>
+        </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:weightSum="2">
+        <Button
+            android:layout_width="match_parent" android:layout_weight="1" android:id="@+id/monthly"
+            android:layout_height="match_parent" android:text="USD 2.99/month"/>
+        <Button
+            android:layout_width="match_parent" android:layout_weight="1" android:id="@+id/yearly"
+            android:layout_height="match_parent" android:text="USD 12.99/month" />
+    </LinearLayout>
+</LinearLayout>

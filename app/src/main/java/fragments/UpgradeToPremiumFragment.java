@@ -7,21 +7,18 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
-import com.squareup.picasso.Picasso;
 
 import umaahi.pravik.constructionnoteplus.R;
 
 /**
- * Created by Vikrant on 3/4/2017.
+ * Created by Vikrant on 3/27/2017.
  */
 
-public class MyProfileFragment extends Fragment {
+public class UpgradeToPremiumFragment extends Fragment {
     public DatabaseReference mDatabase;
     private FirebaseAuth mAuth;
 
@@ -38,22 +35,26 @@ public class MyProfileFragment extends Fragment {
         name=user.getDisplayName();
         email=user.getEmail();
         img=user.getPhotoUrl().toString();
-       // String s=user.get
+        // String s=user.get
 
         //return inflater.inflate(R.layout.myprofile_layout, container, false);
-        View view = inflater.inflate(R.layout.myprofile_layout,container, false);
-        ImageView imgV=(ImageView)view.findViewById(R.id.img);
-        TextView nameTxt=(TextView)view.findViewById(R.id.name);
-        TextView emailTxt=(TextView)view.findViewById(R.id.email);
-        TextView member=(TextView)view.findViewById(R.id.member);
-        Picasso.with(getActivity()).load(img) .into(imgV);
-        nameTxt.setText(name);
-        emailTxt.setText(email);
-      //  member.setText(s);
+        View view = inflater.inflate(R.layout.upgrade_layout,container, false);
+
+       // final TextView problem=(TextView)view.findViewById(R.id.problem);
+        /*Button sendBtn=(Button) view.findViewById(R.id.send);
+        sendBtn.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // do something
+               // writeNewPost(email,problem.getText().toString());
+            }
+        });*/
+        //  member.setText(s);
         setHasOptionsMenu(true);
         return view;
     }
-
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         menu.findItem(R.id.action_settings).setVisible(false);

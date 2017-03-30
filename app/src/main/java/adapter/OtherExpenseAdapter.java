@@ -10,18 +10,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import fragments.AddExpense;
-import model.SiteMaterial;
+import fragments.UpdateExpenseFragment;
+import model.SiteOtherExpense;
 import umaahi.pravik.constructionnoteplus.R;
-import view.UpdateExpenseViewHolder;
+import view.OtherExpenseViewHolder;
 
 import static com.google.android.gms.internal.zzt.TAG;
 
@@ -30,21 +36,28 @@ import static com.google.android.gms.internal.zzt.TAG;
  * Created by Vikrant on 2/28/2017.
  */
 
-public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseViewHolder> {
+public class OtherExpenseAdapter extends RecyclerView.Adapter<OtherExpenseViewHolder> {
 
     private Context mContext;
-    private DatabaseReference mDatabaseReference,materialDBRefrence;
+    private DatabaseReference mDatabaseReference;
+    private DatabaseReference labourDBRefrence;
     private ChildEventListener mChildEventListener;
 
     private List<String> mCommentIds = new ArrayList<>();
-    private List<SiteMaterial> mComments = new ArrayList<>();
+    private List<SiteOtherExpense> mComments = new ArrayList<>();
     FragmentManager manager;
     FragmentTransaction fragmentTransaction;
-    private DatabaseReference mPostReference;
-    AddExpense frag;
-    public Context context;
 
-    public UpdateExpenseAdapter(final Context context, DatabaseReference ref) {
+    UpdateExpenseFragment frag;
+    public Context context;
+    private DatabaseReference mPostReference;
+    public DatabaseReference mDatabase;
+    private ValueEventListener mPostListener;
+    private String mPostKey,userId,siteID,expId;
+    private FirebaseAuth mAuth;
+    String expName,expAmt,datestr;
+
+    public OtherExpenseAdapter(final Context context, DatabaseReference ref) {
         mContext = context;
         mDatabaseReference = ref;
 
@@ -57,7 +70,7 @@ public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseView
                 Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
 
                 // A new comment has been added, add it to the displayed list
-                SiteMaterial s = dataSnapshot.getValue(SiteMaterial.class);
+                SiteOtherExpense s = dataSnapshot.getValue(SiteOtherExpense.class);
 
                 // [START_EXCLUDE]
                 // Update RecyclerView
@@ -73,7 +86,7 @@ public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseView
 
                 // A comment has changed, use the key to determine if we are displaying this
                 // comment and if so displayed the changed comment.
-                SiteMaterial newComment = dataSnapshot.getValue(SiteMaterial.class);
+                SiteOtherExpense newComment = dataSnapshot.getValue(SiteOtherExpense.class);
                 String commentKey = dataSnapshot.getKey();
 
                 // [START_EXCLUDE]
@@ -119,7 +132,7 @@ public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseView
 
                 // A comment has changed position, use the key to determine if we are
                 // displaying this comment and if so move it.
-                SiteMaterial movedComment = dataSnapshot.getValue(SiteMaterial.class);
+                SiteOtherExpense movedComment = dataSnapshot.getValue(SiteOtherExpense.class);
                 String commentKey = dataSnapshot.getKey();
 
                 // ...
@@ -140,22 +153,94 @@ public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseView
     }
 
     @Override
-    public UpdateExpenseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public OtherExpenseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.update_site_card_item, parent, false);
+        View view = inflater.inflate(R.layout.otherexpensecard, parent, false);
+        context = parent.getContext();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        userId = user.getUid();
+        siteID = SiteAdapter.SITE_ID;
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        labourDBRefrence = FirebaseDatabase.getInstance().getReference()
+                .child("user-labour").child(userId).child(siteID);
         context = parent.getContext();
 
-        frag= new AddExpense();
-        return new UpdateExpenseViewHolder(view);
+        frag= new UpdateExpenseFragment();
+        return new OtherExpenseViewHolder(view);
+
     }
 
     @Override
-    public void onBindViewHolder(final UpdateExpenseViewHolder holder, int position) {
-        final SiteMaterial s = mComments.get(position);
-        holder.authorView.setText(s.getMaterialName());
-        holder.bodyView.setText(s.getMaterialPaidBy());
+    public void onBindViewHolder(final OtherExpenseViewHolder holder, int position) {
+        final SiteOtherExpense s = mComments.get(position);
+        holder.name.setText(s.getExpName());
+        holder.amount.setText(s.getExpAmt());
+        holder.date.setText(s.getExpDate());
 
+
+        holder.edit.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // do something
+
+                expName =   holder.name.getText().toString().trim();
+                expAmt =  holder.amount.getText().toString().trim();
+                datestr =  holder.date.getText().toString().trim();
+
+
+
+                holder.name.setEnabled(true);
+                holder.amount.setEnabled(true);
+                holder.date.setEnabled(true);
+
+
+                // holder.edit.setVisibility(View.GONE);
+                holder.edit.setVisibility(View.GONE);
+                holder.save.setVisibility(View.VISIBLE);
+                holder.delete.setVisibility(View.VISIBLE);
+
+            }
+        });
+        holder.delete.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // do something
+                // System.out.println(s.getMaterialId()+"==="+s.getSiteId());
+                mDatabaseReference.child(s.getExpId()).removeValue();
+            }
+        });
+        holder.save.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                // do something
+                expId=s.getExpId();
+                expName =   holder.name.getText().toString().trim();
+                expAmt =  holder.amount.getText().toString().trim();
+                datestr =  holder.date.getText().toString().trim();
+                updateOtherExpense(userId, siteID,expName,datestr, expAmt);
+                holder.name.setText(s.getExpName());
+                holder.amount.setText(s.getExpAmt());
+
+                holder.name.setEnabled(false);
+                holder.amount.setEnabled(false);
+                holder.date.setEnabled(false);
+                holder.edit.setVisibility(View.VISIBLE);
+                holder.save.setVisibility(View.GONE);
+                holder.delete.setVisibility(View.GONE);
+
+            }
+        });
     }
+
+
 
     @Override
     public int getItemCount() {
@@ -169,4 +254,17 @@ public class UpdateExpenseAdapter extends RecyclerView.Adapter<UpdateExpenseView
         }
     }
 
+    private void updateOtherExpense(String userId, String siteid, String expName, String date, String amt) {
+        //  String key = mDatabase.child("user-labour").push().getKey();
+        SiteOtherExpense post = new SiteOtherExpense(userId,siteID,expId,expName,date,amt);
+        Map<String, Object> postValues = post.toMap();
+
+        Map<String, Object> childUpdates = new HashMap<>();
+        //childUpdates.put("/site/" + key, postValues);
+        childUpdates.put("/user-otherExpense/" + userId + "/" +siteID + "/" +  expId, postValues);
+
+        mDatabase.updateChildren(childUpdates);
+
+
+    }
 }

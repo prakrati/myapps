@@ -12,6 +12,9 @@ import java.util.Map;
 public class SiteMaterial {
     public String uid;
     public String siteId;
+
+
+
     public String materialId;
     public String materialName;
     public String materialDate;
@@ -19,7 +22,31 @@ public class SiteMaterial {
     public String materialQty;
     public String materialPaidBy;
     public String materialTotalCost;
+    public HashMap<String, Object> result = new HashMap<>();
     public SiteMaterial() {
+    }
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
     public SiteMaterial(String uid,String siteId,String materialId, String materialName,String materialDate,String materialUnitPrice,String materialQty,String materialPaidBy,String materialTotalCost) {
         this.uid = uid;
@@ -84,7 +111,7 @@ public class SiteMaterial {
 
     @Exclude
     public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
+
         result.put("uid", uid);
         result.put("siteId", siteId);
         result.put("materialId", materialId);

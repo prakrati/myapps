@@ -19,6 +19,83 @@ public class SiteLabour {
     public String labourWages;
     public String labourPaidBy;
     public String labourTotalCost;
+    public HashMap<String, Object> result = new HashMap<>();
+    public String getLabourId() {
+        return labourId;
+    }
+
+    public void setLabourId(String labourId) {
+        this.labourId = labourId;
+    }
+
+
+    public String getLabourPaidBy() {
+        return labourPaidBy;
+    }
+
+    public void setLabourPaidBy(String labourPaidBy) {
+        this.labourPaidBy = labourPaidBy;
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getSiteId() {
+        return siteId;
+    }
+
+    public void setSiteId(String siteId) {
+        this.siteId = siteId;
+    }
+
+
+
+    public String getLabourName() {
+        return labourName;
+    }
+
+    public void setLabourName(String labourName) {
+        this.labourName = labourName;
+    }
+
+    public String getLabourDate() {
+        return labourDate;
+    }
+
+    public void setLabourDate(String labourDate) {
+        this.labourDate = labourDate;
+    }
+
+    public String getLabourDays() {
+        return labourDays;
+    }
+
+    public void setLabourDays(String labourDays) {
+        this.labourDays = labourDays;
+    }
+
+    public String getLabourWages() {
+        return labourWages;
+    }
+
+    public void setLabourWages(String labourWages) {
+        this.labourWages = labourWages;
+    }
+
+    public String getLabourTotalCost() {
+        return labourTotalCost;
+    }
+
+    public void setLabourTotalCost(String labourTotalCost) {
+        this.labourTotalCost = labourTotalCost;
+    }
+
+
     public SiteLabour() {
     }
     public SiteLabour(String uid,String siteId,String labourId, String labourName,String labourDate,String labourDays,
@@ -36,7 +113,7 @@ public class SiteLabour {
     }
     @Exclude
     public Map<String, Object> toMap() {
-        HashMap<String, Object> result = new HashMap<>();
+
         result.put("uid", uid);
         result.put("siteId", siteId);
         result.put("labourId", labourId);

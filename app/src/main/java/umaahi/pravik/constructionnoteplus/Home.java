@@ -1,9 +1,14 @@
 package umaahi.pravik.constructionnoteplus;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,15 +18,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 
+import fragments.AddProjectDialog;
+import fragments.FeedbackFragment;
 import fragments.MyProfileFragment;
 import fragments.SiteFragment;
-import fragments.UpdateExpenseFragment;
-import fragments.ViewExpenseFragment;
+import fragments.UpgradeToPremiumFragment;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,7 +52,8 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        Drawable drawable = ContextCompat.getDrawable(getApplicationContext(),R.drawable.tap_to_add);
+        toolbar.setOverflowIcon(drawable);
         //add this line to display menu1 when the activity is loaded
         displaySelectedScreen(R.id.addsite);
         mAuth = FirebaseAuth.getInstance();
@@ -98,6 +106,8 @@ public class Home extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            AddProjectDialog dialog = new AddProjectDialog ();
+            dialog .show(getSupportFragmentManager(), "ConstructionNotes+");
             return true;
         }
 
@@ -121,20 +131,29 @@ public class Home extends AppCompatActivity
             case R.id.addsite:
                 fragment = new SiteFragment();
                 break;
-            case R.id.viewexpense:
+           /* case R.id.viewexpense:
                 fragment = new ViewExpenseFragment();
-                break;
-            case R.id.updateexpense:
-                fragment = new UpdateExpenseFragment();
-                break;
+                break;*/
             case R.id.myprofile:
                 fragment = new MyProfileFragment();
                 break;
+            case R.id.upgradetopremium:
+                fragment = new UpgradeToPremiumFragment();
+                break;
+
             case R.id.share:
                // fragment = new
+                shareApp();
                 break;
             case R.id.sendfeedback:
                // fragment = new Menu3();
+                fragment = new FeedbackFragment();
+               // launchMarket();
+                break;
+            case R.id.rate:
+                // fragment = new Menu3();
+
+                launchMarket();
                 break;
         }
 
@@ -142,12 +161,34 @@ public class Home extends AppCompatActivity
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
             ft.replace(R.id.content_frame, fragment);
-            ft.commit();
+             ft.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
     }
 
-
+    private void launchMarket() {
+        Uri uri = Uri.parse("market://details?id=" + getPackageName());
+        Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+        try {
+            startActivity(myAppLinkToMarket);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, " unable to find market app", Toast.LENGTH_LONG).show();
+        }
+    }
+    private void shareApp()
+    {
+        try {
+            Intent i = new Intent(Intent.ACTION_SEND);
+            i.setType("text/plain");
+            i.putExtra(Intent.EXTRA_SUBJECT, "My application name");
+            String sAux = "\nLet me recommend you this application\n\n";
+            sAux = sAux + "https://play.google.com/store/apps/details?id=Orion.Soft \n\n";
+            i.putExtra(Intent.EXTRA_TEXT, sAux);
+            startActivity(Intent.createChooser(i, "choose one"));
+        } catch(Exception e) {
+            //e.toString();
+        }
+    }
 }

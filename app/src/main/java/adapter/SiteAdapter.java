@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fragments.AddExpense;
+import fragments.UpdateExpenseFragment;
+import fragments.ViewExpenseFragment;
 import model.SiteInfo;
 import umaahi.pravik.constructionnoteplus.R;
 import view.SiteViewHolder;
@@ -45,9 +47,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteViewHolder> {
     FragmentManager manager;
     FragmentTransaction fragmentTransaction;
     private DatabaseReference mPostReference;
-    AddExpense frag;
+    AddExpense addExpenseFragment;
+    UpdateExpenseFragment updateExpenseFrag;
+    ViewExpenseFragment viewExpenseFragment;
      public Context context;
-
+    public static  String SITE_ID ;
+    public static  String OPTION_CHK ;
     public SiteAdapter(final Context context, DatabaseReference ref) {
         mContext = context;
         mDatabaseReference = ref;
@@ -149,7 +154,9 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteViewHolder> {
         View view = inflater.inflate(R.layout.site_card_item, parent, false);
          context = parent.getContext();
 
-        frag= new AddExpense();
+        addExpenseFragment= new AddExpense();
+        updateExpenseFrag=new UpdateExpenseFragment();
+        viewExpenseFragment=new ViewExpenseFragment();
         return new SiteViewHolder(view);
     }
 
@@ -176,11 +183,13 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteViewHolder> {
 
                                  manager = ((AppCompatActivity)context).getSupportFragmentManager();
                                 Bundle args = new Bundle();
+                                SITE_ID=s.getSiteId();
                                 args.putString("siteid", s.getSiteId());
                                 args.putString("sitename", s.getSiteName());
-                                frag.setArguments(args);
+                                addExpenseFragment.setArguments(args);
                                  fragmentTransaction = manager.beginTransaction();
-                                fragmentTransaction.replace(R.id.content_frame, frag);
+                                fragmentTransaction.replace(R.id.content_frame, addExpenseFragment);
+                                fragmentTransaction.addToBackStack(null);
                                 fragmentTransaction.commit();
 
                                 break;
@@ -209,7 +218,39 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteViewHolder> {
                                // mPostReference.removeValue();
 
                                 break;
+                            case R.id.menu3:
 
+                                OPTION_CHK="update";
+                                manager = ((AppCompatActivity)context).getSupportFragmentManager();
+                                Bundle args1 = new Bundle();
+                                SITE_ID=s.getSiteId();
+                                args1.putString("option", "edit");
+                                args1.putString("siteid", s.getSiteId());
+                                args1.putString("sitename", s.getSiteName());
+                                args1.putString("location", s.getLocation());
+                                updateExpenseFrag.setArguments(args1);
+                                fragmentTransaction = manager.beginTransaction();
+                                fragmentTransaction.replace(R.id.content_frame, updateExpenseFrag);
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
+
+                                break;
+                            case R.id.menu4:
+                                //handle menu2 click
+                                OPTION_CHK="view and share";
+                                manager = ((AppCompatActivity)context).getSupportFragmentManager();
+                                Bundle args2 = new Bundle();
+                                SITE_ID=s.getSiteId();
+                                args2.putString("option", "share");
+                                args2.putString("siteid", s.getSiteId());
+                                args2.putString("sitename", s.getSiteName());
+                                args2.putString("location", s.getLocation());
+                                viewExpenseFragment.setArguments(args2);
+                                fragmentTransaction = manager.beginTransaction();
+                                fragmentTransaction.replace(R.id.content_frame, viewExpenseFragment);
+                                fragmentTransaction.addToBackStack(null);
+                                fragmentTransaction.commit();
+                                break;
                         }
                         return false;
                     }

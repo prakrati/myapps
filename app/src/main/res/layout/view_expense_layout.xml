@@ -1,6 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"  xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:layout_width="match_parent" android:id="@+id/sitelayout"
+        android:layout_height="wrap_content"
+
+        android:orientation="vertical" android:paddingLeft="5dp">
+
+        <TextView
+            android:layout_width="match_parent" android:gravity="center" android:id="@+id/titletoview"
+            android:layout_height="wrap_content" android:textSize="@dimen/text_size" android:textColor="@color/textcolor"
+
+            android:text="Update Record" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+            <TextView
+                android:id="@+id/sitename" android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/textcolor"
+                android:ems="10" android:layout_weight="1"
+                android:inputType="textPersonName"
+                android:text="Name" />
+
+            <Button
+                android:id="@+id/fullexpense" android:enabled="false"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:textColor="@color/textcolor"
+                android:ems="10" android:layout_weight="1"
+                android:inputType="textPersonName"
+                android:text="View Full Expense" />
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="horizontal" android:layout_width="match_parent" android:layout_marginTop="5dip"
+            android:layout_height="wrap_content"  android:layout_marginBottom="5dip" android:weightSum="2"  android:background="@drawable/list_background">
+            <TextView
+                android:text="- Sort By - "  android:textColor="@color/textcolor"
+                android:layout_width="match_parent" android:gravity="center" android:textSize="14sp"
+                android:layout_height="wrap_content" android:layout_weight="1"
+                />
+
+            <Spinner
+                android:layout_width="match_parent" android:gravity="center"
+                android:layout_height="wrap_content" android:paddingTop="10dp" android:layout_weight="1"
+                android:id="@+id/spinner" />
+        </LinearLayout>
+    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recylerview_site_update"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sitelayout"
+        tools:listitem="@layout/update_site_card_item" />
 
 </LinearLayout>
+
